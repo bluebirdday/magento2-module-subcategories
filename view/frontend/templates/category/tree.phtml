@@ -1,0 +1,75 @@
+<?php
+/**
+ * @file
+ * Magento 2 module - Sequence by environment
+ * Copyright (C) 2022  Bluebirdday
+ *
+ * This program is free software: you can redistribute it and/or modify it under the terms
+ * of the GNU General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program.
+ * If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/**
+ * Category view template
+ *
+ * @var $block \Bluebirdday\Subcategories\Block\Tree
+ * @var $escaper \Magento\Framework\Escaper
+ */
+$maxSubChildren = $block->getMaxSubChildren();
+$depth = $block->getDepth();
+$tree = $block->getCurrentTree($depth);
+$categories = $tree->getChildren();
+?>
+<?php if ($tree->hasChildren()): ?>
+    <div class="category-listing category-listing--tree">
+        <?php foreach ($categories as $category): ?>
+            <?php $children = $category->getChildren(); ?>
+            <div class="category-listing__item">
+                <a class="category-listing__item-link" href="<?= $escaper->escapeHtml($category->getUrl()); ?>">
+                    <span class="category-listing__item-title"><?= $escaper->escapeHtml($category->getName())?></span>
+                </a>
+
+                <?php if ($description = $category->getShortDescription()): ?>
+                    <span class="category-listing__item-description">
+                        <?= $description ?>
+                    </span>
+                <?php endif; ?>
+
+                <?php if ($children->count()): ?>
+                    <div class="category-listing__children">
+                        <?php foreach ($children as $child): ?>
+                            <div class="category-listing__child">
+                                <a class="category-listing__child-link" href="<?= $child->getUrl() ?>">
+                                    <span class="category-listing__child-title"><?= $child->getName() ?></span>
+                                </a>
+
+                                <?php $subChildren = $child->getChildren(); ?>
+                                <?php if ($subChildren->count()): ?>
+                                    <div class="category-listing__subchildren">
+                                        <?php $subChildrenIterator = 0; ?>
+                                        <?php foreach ($subChildren as $subChild): ?>
+                                            <?php $subChildrenIterator++; ?>
+                                            <?php if ($subChildrenIterator > $maxSubChildren) { break;} ?>
+                                            <div class="subcategories__subchild">
+                                                <a class="subcategories__subchild-link" href="<?= $subChild->getUrl() ?>">
+                                                    <span class="category-listing__subchild-title"><?= $subChild->getName() ?></span>
+                                                </a>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+            </div>
+        <?php endforeach; ?>
+    </div>
+<?php endif; ?>
